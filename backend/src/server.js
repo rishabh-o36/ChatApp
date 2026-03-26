@@ -1,14 +1,12 @@
 import express from "express"
-import dotenv from "dotenv"
 import {connectDB} from './lib/db.js'
 
 import authRoutes from "./routes/auth.route.js"
 import messageRoutes from "./routes/message.route.js"
-
-dotenv.config()
+import {ENV} from './lib/env.js'
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = ENV.PORT || 3000
 
 // Middleware
 app.use(express.json())  // req.body
