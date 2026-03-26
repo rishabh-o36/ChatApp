@@ -4,7 +4,7 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 import { arcjetProtection } from "../middleware/arcjet.middleware.js";   //for checking whether bots or spam or illegal requsts
 
 const router = express.Router();
-router.use(arcjetProtection);
+// router.use(arcjetProtection);
 
 router.post('/signup', signup)
 router.post('/login', login)
