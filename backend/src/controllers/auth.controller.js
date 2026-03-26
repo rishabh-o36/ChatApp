@@ -35,8 +35,11 @@ export const singup = async (req, res) => {
         })
 
         if(newUser){
-            generateToken(newUser._id, res)
-            await newUser.save();
+            // generateToken(newUser._id, res)
+            // await newUser.save();
+            // OR
+            const savedUser = await newUser.save();
+            generateToken(savedUser._id, res)
 
             res.status(201).json({
                 _id: newUser._id,
