@@ -1,0 +1,9 @@
+"Rate limiting" :
+    -prevent abuse (ex:someone making 1000 login attempts in a minute)
+    -Protecting servers from getting oberwhelmed
+    -status:429 which means too many requests
+    -- using "Arcjet" platform for this to handle
+
+"Email" :
+    -"RESEND" used for welcome mails
+    
