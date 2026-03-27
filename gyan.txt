@@ -7,3 +7,7 @@
 "Email" :
     -"RESEND" used for welcome mails
     
+
+FRONTEND-
+    1. daisyUI for FRONTEND
+    2. tailwind css
