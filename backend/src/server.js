@@ -11,7 +11,8 @@ const app = express()
 const PORT = ENV.PORT || 3000
 
 // Middleware
-app.use(express.json())  // req.body
+app.use(express.json({ limit: "10mb" }))
+app.use(express.urlencoded({ limit: "10mb", extended: true }))  // req.body
 app.use(cors({origin: ENV.CLIENT_URL, credentials: true}))
 app.use(cookieParser())  //req.cookie.jwt
 // Routes
