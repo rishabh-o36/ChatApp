@@ -14,7 +14,7 @@ function MessageInput() {
   const { sendMessage, isSoundEnabled } = useChatStore();
 
   const handleSendMessage = (e) => {
-    e.preventDefault();
+    e.preventDefault();  //does not refresh page for each action
     if (!text.trim() && !imagePreview) return;
     if (isSoundEnabled) playRandomKeyStrokeSound();
 
