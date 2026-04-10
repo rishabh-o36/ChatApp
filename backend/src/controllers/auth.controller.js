@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { generateToken } from '../lib/utils.js'
 import { sendWelcomeEmail } from '../emails/emailhandlers.js'
 import { ENV } from '../lib/env.js'
-import cloudinary from '../lib/cloudinary.js'
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
     const { fullName, email, password } = req.body
@@ -98,24 +98,60 @@ export const logout = (req, res)=>{
     res.status(200).json({message:"Logged Out Successfully"})
 }
 
+// export const updateProfile = async (req, res) => {
+//   try {
+//     const { profilePic } = req.body;
+//     if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
+
+//     const userId = req.user._id;
+
+//     const uploadResponse = await cloudinary.uploader.upload(profilePic);
+
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { profilePic: uploadResponse.secure_url },
+//       { new: true }
+//     );
+
+//     res.status(200).json(updatedUser);
+//   } catch (error) {
+//     console.log("Error in update profile:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+//uisng multer to handle profile picture upload in update profile route
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body;
-    if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
-
     const userId = req.user._id;
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    // ❌ no file
+    if (!req.file) {
+      return res.status(400).json({ message: "Profile pic is required" });
+    }
 
+    // ✅ convert buffer → base64
+    const base64 = req.file.buffer.toString("base64");
+
+    const dataURI = `data:${req.file.mimetype};base64,${base64}`;
+
+    // ✅ upload to cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(dataURI, {
+      folder: "chat-app/profile",
+    });
+
+    // ✅ update user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
       { new: true }
-    );
+    ).select("-password");
 
-    res.status(200).json(updatedUser);
+    return res.status(200).json(updatedUser);
+
   } catch (error) {
-    console.log("Error in update profile:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("FULL ERROR:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

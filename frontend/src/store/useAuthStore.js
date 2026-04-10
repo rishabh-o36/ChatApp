@@ -1,28 +1,28 @@
-import {create} from 'zustand'
-import {axiosInstance} from '../lib/axios'
+import { create } from 'zustand'
+import { axiosInstance } from '../lib/axios'
 import toast from "react-hot-toast";
 
 export const useAuthStore = create((set) => ({
-    authUser: null,
-    isCheckingAuth: true,
-    isSigningUp: false,
-    isLoggingIn: false,
+  authUser: null,
+  isCheckingAuth: true,
+  isSigningUp: false,
+  isLoggingIn: false,
 
-    checkAuth: async () =>{
-        try {
-            const res = await axiosInstance.get('/auth/check')
-            set({authUser: res.data})
-        } catch (error) {
-            console.log("Error in authCheck: ",error)
-            set({authUser: null})
-        } finally {
-            set({isCheckingAuth: false})
-        }
-    },
+  checkAuth: async () => {
+    try {
+      const res = await axiosInstance.get('/auth/check')
+      set({ authUser: res.data })
+    } catch (error) {
+      console.log("Error in authCheck: ", error)
+      set({ authUser: null })
+    } finally {
+      set({ isCheckingAuth: false })
+    }
+  },
 
-    signup: async (data) =>{
-        set({isSigningUp: true})
-        try {
+  signup: async (data) => {
+    set({ isSigningUp: true })
+    try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
 
@@ -33,9 +33,9 @@ export const useAuthStore = create((set) => ({
     } finally {
       set({ isSigningUp: false });
     }
-    },
+  },
 
-    login: async (data) => {
+  login: async (data) => {
     set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
@@ -61,15 +61,42 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-    updateProfile: async (data) => {
+  //   updateProfile: async (data) => {
+  //   try {
+  //     const res = await axiosInstance.put("/auth/update-profile", data);
+  //     console.log("RESPONSE:", res)
+  //     set({ authUser: res.data });
+  //     toast.success("Profile updated successfully");
+  //   } catch (error) {
+  //     console.log("Error in update profile:", error);
+  //     toast.error(error.response.data.message);
+  //   }
+  // },
+
+  updateProfile: async (data) => {
     try {
-      const res = await axiosInstance.put("/auth/update-profile", data);
-      console.log("RESPONSE:", res)
+      const res = await axiosInstance.put(
+        "/auth/update-profile",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("RESPONSE:", res);
+
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
+
     } catch (error) {
       console.log("Error in update profile:", error);
-      toast.error(error.response.data.message);
+
+      toast.error(
+        error.response?.data?.message || "Update failed"
+      );
     }
   },
 
