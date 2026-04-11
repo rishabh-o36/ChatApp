@@ -9,18 +9,22 @@ import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
 function ChatContainer() {
   const {
     selectedUser,
-    getMessageByUserId,
+    getMessagesByUserId,
     messages,
     isMessagesLoading,
+    subscribeToMessages,
+    unsubscribeFromMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
-
   useEffect(() => {
-    getMessageByUserId(selectedUser._id);
-  }, [selectedUser, getMessageByUserId]
-  )
+    getMessagesByUserId(selectedUser._id);
+    subscribeToMessages();
+
+    // clean up
+    return () => unsubscribeFromMessages();
+  }, [selectedUser, getMessagesByUserId, subscribeToMessages, unsubscribeFromMessages]);
 
   useEffect(() => {
     if (messageEndRef.current) {
@@ -28,12 +32,11 @@ function ChatContainer() {
     }
   }, [messages]);
 
-
   return (
     <>
       <ChatHeader />
       <div className="flex-1 px-6 overflow-y-auto py-8">
-         {messages.length > 0 && ! isMessagesLoading  ?(
+        {messages.length > 0 && !isMessagesLoading ? (
           <div className="max-w-3xl mx-auto space-y-6">
             {messages.map((msg) => (
               <div
