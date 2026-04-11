@@ -37,27 +37,79 @@ export const getMessagesByUserId = async (req, res) => {
   }
 };
 
+// export const sendMessage = async (req, res) => {
+//   try {
+//     const { text, image } = req.body;
+//     const { id: receiverId } = req.params;
+//     const senderId = req.user._id;
+
+//     if (!text && !image) {
+//       return res.status(400).json({ message: "Text or image is required." });
+//     }
+//     if (senderId.equals(receiverId)) {
+//       return res.status(400).json({ message: "Cannot send messages to yourself." });
+//     }
+//     const receiverExists = await User.exists({ _id: receiverId });
+//     if (!receiverExists) {
+//       return res.status(404).json({ message: "Receiver not found." });
+//     }
+
+//     let imageUrl;
+//     if (image) {
+//       // upload base64 image to cloudinary
+//       const uploadResponse = await cloudinary.uploader.upload(image);
+//       imageUrl = uploadResponse.secure_url;
+//     }
+
+//     const newMessage = new Message({
+//       senderId,
+//       receiverId,
+//       text,
+//       image: imageUrl,
+//     });
+
+//     await newMessage.save();
+
+//     //todo send messages in real time using SOCKET-IO if user is online
+
+//     res.status(201).json(newMessage);
+//   } catch (error) {
+//     console.log("Error in sendMessage controller: ", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 export const sendMessage = async (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
-    if (!text && !image) {
+    if (!text && !req.file) {
       return res.status(400).json({ message: "Text or image is required." });
     }
+
     if (senderId.equals(receiverId)) {
       return res.status(400).json({ message: "Cannot send messages to yourself." });
     }
+
     const receiverExists = await User.exists({ _id: receiverId });
     if (!receiverExists) {
       return res.status(404).json({ message: "Receiver not found." });
     }
 
     let imageUrl;
-    if (image) {
-      // upload base64 image to cloudinary
-      const uploadResponse = await cloudinary.uploader.upload(image);
+
+    // ✅ multer file handling
+    if (req.file) {
+      const base64 = req.file.buffer.toString("base64");
+
+      const dataURI = `data:${req.file.mimetype};base64,${base64}`;
+
+      const uploadResponse = await cloudinary.uploader.upload(dataURI, {
+        folder: "chat-app/messages",
+      });
+
       imageUrl = uploadResponse.secure_url;
     }
 
@@ -70,11 +122,10 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    //todo send messages in real time using SOCKET-IO if user is online
-
     res.status(201).json(newMessage);
+
   } catch (error) {
-    console.log("Error in sendMessage controller: ", error.message);
+    console.log("🔥 FULL ERROR:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
