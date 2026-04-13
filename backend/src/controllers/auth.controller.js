@@ -122,36 +122,40 @@ export const logout = (req, res)=>{
 
 
 //uisng multer to handle profile picture upload in update profile route
-export const updateProfile = async (req, res) => {
-  try {
-    const userId = req.user._id;
+export const updateProfilePic = async (req, res) => {
 
-    // ❌ no file
-    if (!req.file) {
-      return res.status(400).json({ message: "Profile pic is required" });
+    try {
+        const { profilePic } = req.body;
+        const userId = req.user?._id;
+
+        if (!profilePic) {
+            return res.status(400).json({ message: "Profile picture is required" });
+        }
+
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized: user not found in request" });
+        }
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { profilePic: uploadResponse.secure_url },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found in database" });
+        }
+
+        return res.status(200).json({ user: updatedUser });
+    } catch (error) {
+        console.log("Error in updateProfilePic FULL:", error);
+        console.log("Error message:", error?.message);
+        console.log("Cloudinary error:", error?.http_code, error?.name);
+        return res.status(500).json({
+            message: error?.message || "Server error in updateProfilePic",
+            details: error || null,
+        });
     }
-
-    // ✅ convert buffer → base64
-    const base64 = req.file.buffer.toString("base64");
-
-    const dataURI = `data:${req.file.mimetype};base64,${base64}`;
-
-    // ✅ upload to cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(dataURI, {
-      folder: "chat-app/profile",
-    });
-
-    // ✅ update user
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
-    ).select("-password");
-
-    return res.status(200).json(updatedUser);
-
-  } catch (error) {
-    console.log("FULL ERROR:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
 };
