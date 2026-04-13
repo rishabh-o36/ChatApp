@@ -12,43 +12,18 @@ function ProfileHeader() {
 
   const fileInputRef = useRef(null);
 
-  // const handleImageUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file) return;
-
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(file);
-
-  //   reader.onloadend = async () => {
-  //     const base64Image = reader.result;
-  //     setSelectedImg(base64Image);
-  //     await updateProfile({ profilePic: base64Image });
-  //   };
-  // };
-
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // ✅ validation
-    if (!file.type.startsWith("image/")) {
-      alert("Only images allowed");
-      return;
-    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert("Max 2MB allowed");
-      return;
-    }
-
-    // ✅ preview (no base64 needed)
-    setSelectedImg(URL.createObjectURL(file));
-
-    // ✅ send as FormData
-    const formData = new FormData();
-    formData.append("profilePic", file);
-
-    await updateProfile(formData);
+    reader.onloadend = async () => {
+      const base64Image = reader.result;
+      setSelectedImg(base64Image);
+      await updateProfile({ profilePic: base64Image });
+    };
   };
 
   return (
@@ -62,10 +37,10 @@ function ProfileHeader() {
               onClick={() => fileInputRef.current.click()}
             >
               <img
-  src={selectedImg || authUser?.profilePic || "/avatar.png"}
-  alt="User image"
-  className="size-full object-cover"
-/>
+                src={selectedImg || authUser.profilePic || "/avatar.png"}
+                alt="User image"
+                className="size-full object-cover"
+              />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <span className="text-white text-xs">Change</span>
               </div>
@@ -104,8 +79,8 @@ function ProfileHeader() {
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
             onClick={() => {
-              // click sound
-              mouseClickSound.currentTime = 0; //reseting to start
+              // play click sound before toggling
+              mouseClickSound.currentTime = 0; // reset to start
               mouseClickSound.play().catch((error) => console.log("Audio play failed:", error));
               toggleSound();
             }}
@@ -121,4 +96,5 @@ function ProfileHeader() {
     </div>
   );
 }
+
 export default ProfileHeader;

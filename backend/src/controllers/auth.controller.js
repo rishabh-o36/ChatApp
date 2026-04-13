@@ -105,8 +105,8 @@ export const logout = (req, res)=>{
 
 //     const userId = req.user._id;
 
-//     const uploadResponse = await cloudinary.uploader.upload(profilePic);
-
+//     const uploadResponse = await cloudinary.uploader.upload(req.body.profilePic);
+    
 //     const updatedUser = await User.findByIdAndUpdate(
 //       userId,
 //       { profilePic: uploadResponse.secure_url },
@@ -120,38 +120,30 @@ export const logout = (req, res)=>{
 //   }
 // };
 
-
-//uisng multer to handle profile picture upload in update profile route
 export const updateProfile = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const { profilePic } = req.body;
 
-    // ❌ no file
-    if (!req.file) {
+    if (!profilePic) {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    // ✅ convert buffer → base64
-    const base64 = req.file.buffer.toString("base64");
+    const userId = req.user._id;
 
-    const dataURI = `data:${req.file.mimetype};base64,${base64}`;
-
-    // ✅ upload to cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(dataURI, {
-      folder: "chat-app/profile",
+    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      folder: "profile_pics",
     });
 
-    // ✅ update user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
       { new: true }
-    ).select("-password");
+    );
 
-    return res.status(200).json(updatedUser);
-
+    res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("FULL ERROR:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log("Error in update profile:", error.message);
+    console.log(error)
+    res.status(500).json({ message: "Internal server error" });
   }
 };

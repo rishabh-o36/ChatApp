@@ -1,5 +1,5 @@
-import { create } from 'zustand'
-import { axiosInstance } from '../lib/axios'
+import { create } from "zustand";
+import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
@@ -15,28 +15,25 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get('/auth/check')
-      set({ authUser: res.data })
-      get().connectSocket(); // connect to socket after successful auth check
+      const res = await axiosInstance.get("/auth/check");
+      set({ authUser: res.data });
+      get().connectSocket();
     } catch (error) {
-      console.log("Error in authCheck: ", error)
-      set({ authUser: null })
+      console.log("Error in authCheck:", error);
+      set({ authUser: null });
     } finally {
-      set({ isCheckingAuth: false })
+      set({ isCheckingAuth: false });
     }
   },
 
   signup: async (data) => {
-    set({ isSigningUp: true })
+    set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
-      
 
-      //toast is used to give pop type notifacation 
       toast.success("Account created successfully!");
-
-      get().connectSocket(); // connect to socket after successful signup
+      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -52,7 +49,7 @@ export const useAuthStore = create((set, get) => ({
 
       toast.success("Logged in successfully");
 
-      get().connectSocket(); // connect to socket after successful login
+      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -65,49 +62,21 @@ export const useAuthStore = create((set, get) => ({
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logged out successfully");
-      get().disconnectSocket(); // disconnect from socket on logout
+      get().disconnectSocket();
     } catch (error) {
       toast.error("Error logging out");
       console.log("Logout error:", error);
     }
   },
 
-  //   updateProfile: async (data) => {
-  //   try {
-  //     const res = await axiosInstance.put("/auth/update-profile", data);
-  //     console.log("RESPONSE:", res)
-  //     set({ authUser: res.data });
-  //     toast.success("Profile updated successfully");
-  //   } catch (error) {
-  //     console.log("Error in update profile:", error);
-  //     toast.error(error.response.data.message);
-  //   }
-  // },
-
   updateProfile: async (data) => {
     try {
-      const res = await axiosInstance.put(
-        "/auth/update-profile",
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
-
-      console.log("RESPONSE:", res);
-
+      const res = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
-
     } catch (error) {
       console.log("Error in update profile:", error);
-
-      toast.error(
-        error.response?.data?.message || "Update failed"
-      );
+      toast.error(error.response.data.message);
     }
   },
 
@@ -130,7 +99,7 @@ export const useAuthStore = create((set, get) => ({
   },
 
   disconnectSocket: () => {
-    if(get().socket?.connected) get().socket.disconnect();
+    if (get().socket?.connected) get().socket.disconnect();
   },
-
-}))
+  
+}));
