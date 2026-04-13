@@ -121,7 +121,7 @@ export const logout = (req, res)=>{
 // };
 
 
-export const updateProfilePic = async (req, res) => {
+export const updateProfile = async (req, res) => {
 
     try {
         const { profilePic } = req.body;
@@ -149,13 +149,18 @@ export const updateProfilePic = async (req, res) => {
 
         return res.status(200).json({ user: updatedUser });
     } catch (error) {
-        console.log("Error in updateProfilePic FULL:", error);
-        console.log("Error message:", error?.message);
-        console.log("Cloudinary error:", error?.http_code, error?.name);
-        return res.status(500).json({
-            message: error?.message || "Server error in updateProfilePic",
-            details: error || null,
-        });
-    }
+        console.log("TYPE:", typeof profilePic);
+console.log("LENGTH:", profilePic?.length);
+console.log("START:", profilePic?.substring(0, 50));
+    console.log("===== CLOUDINARY ERROR FULL =====");
+    console.log(error);
+    console.log("Message:", error?.message);
+    console.log("HTTP Code:", error?.http_code);
+    console.log("Stack:", error?.stack);
+
+    return res.status(500).json({
+        message: error?.message || "Server error",
+    });
+}
 };
 
