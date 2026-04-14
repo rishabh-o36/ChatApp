@@ -132,19 +132,8 @@ http://localhost:5173
 
 ---
 
-## 🔗 API Base URL
-
-Frontend connects to:
-
-```
-http://localhost:3000/api
-```
-
----
-
 ## 📸 UI Preview
 
-> Add your screenshots below 👇
 
 ### 🏠 Home / Chat UI
 
@@ -157,20 +146,6 @@ http://localhost:3000/api
 
 <img width="1201" height="832" alt="image" src="https://github.com/user-attachments/assets/ff4314a3-57e6-434e-b0a8-22bb1ee9818b" />
 
-
----
-
-### 🔐 Login Page
-
-
-
----
-
-### 👤 Profile (Auto Update in Chat UI)
-
-<!-- Add screenshot here -->
-
----
 
 ## 📌 Important Notes
 
