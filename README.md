@@ -146,6 +146,13 @@ http://localhost:5173
 
 <img width="1201" height="832" alt="image" src="https://github.com/user-attachments/assets/ff4314a3-57e6-434e-b0a8-22bb1ee9818b" />
 
+---
+
+### 🗣️Live Chats
+
+<img width="1150" height="813" alt="image" src="https://github.com/user-attachments/assets/ef2992b8-f81d-4eb2-aa1d-dbb1ae46723a" />
+
+---
 
 ## 📌 Important Notes
 
